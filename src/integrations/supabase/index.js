@@ -39,6 +39,13 @@ Comment // table: comments
     content: text
     created_at: timestamp
 
+Profile // table: profiles
+    id: uuid
+    user_id: uuid // foreign key to User
+    bio: text
+    avatar_url: string
+    created_at: timestamp
+
 */
 
 // Hooks for User table
@@ -145,6 +152,42 @@ export const useDeleteComment = () => {
         mutationFn: (commentId) => fromSupabase(supabase.from('comments').delete().eq('id', commentId)),
         onSuccess: () => {
             queryClient.invalidateQueries('comments');
+        },
+    });
+};
+
+// Hooks for Profile table
+export const useProfiles = () => useQuery({
+    queryKey: ['profiles'],
+    queryFn: () => fromSupabase(supabase.from('profiles').select('*')),
+});
+
+export const useAddProfile = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newProfile) => fromSupabase(supabase.from('profiles').insert([newProfile])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('profiles');
+        },
+    });
+};
+
+export const useUpdateProfile = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (updatedProfile) => fromSupabase(supabase.from('profiles').update(updatedProfile).eq('id', updatedProfile.id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('profiles');
+        },
+    });
+};
+
+export const useDeleteProfile = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (profileId) => fromSupabase(supabase.from('profiles').delete().eq('id', profileId)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('profiles');
         },
     });
 };
